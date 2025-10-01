@@ -42,7 +42,7 @@ export interface ActionPlanCard extends BaseCard {
   type: CardType.ACTION_PLAN;
   actionType: ActionType;
   damage?: number;
-  targetType: 'POPULATION' | 'BUILDING' | 'BOTH';
+  targetType: 'GPUS' | 'BUILDING' | 'BOTH';
   specialEffect?: string;
   backfireChance?: number; // Some actions (like Molotovs) can backfire
   backfireDamage?: number;
@@ -60,11 +60,11 @@ export type GameCard = CovertOpCard | PropagandaCard | OrganizationCard | Action
 
 // Covert Op effect types
 export type CovertOpEffect =
-  | { type: 'DAMAGE_POPULATION'; amount: number }
+  | { type: 'DAMAGE_GPUS'; amount: number }
   | { type: 'DAMAGE_BUILDING'; amount: number }
-  | { type: 'STEAL_POPULATION'; amount: number }
+  | { type: 'STEAL_GPUS'; amount: number }
   | { type: 'SKIP_TURN' }
   | { type: 'REDIRECT_ATTACK' }
   | { type: 'CANCEL_PROPAGANDA' }
-  | { type: 'GAIN_POPULATION'; amount: number }
+  | { type: 'GAIN_GPUS'; amount: number }
   | { type: 'SABOTAGE_BUILDING'; amount: number };

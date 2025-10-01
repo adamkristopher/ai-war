@@ -16,7 +16,7 @@ export const FACTION_CONFIGS: Record<FactionType, FactionConfig> = {
       description: 'Double propaganda effectiveness once per game',
       effect: 'DOUBLE_PROPAGANDA'
     },
-    startingPopulation: 50,
+    startingGPUs: 50,
     aiStrategy: AIStrategy.AGGRESSIVE,
     color: '#FF4444'
   },
@@ -35,7 +35,7 @@ export const FACTION_CONFIGS: Record<FactionType, FactionConfig> = {
       description: 'Launch two protests in one turn',
       effect: 'DOUBLE_PROTEST'
     },
-    startingPopulation: 55,
+    startingGPUs: 55,
     aiStrategy: AIStrategy.BALANCED,
     color: '#FF8800'
   },
@@ -54,7 +54,7 @@ export const FACTION_CONFIGS: Record<FactionType, FactionConfig> = {
       description: 'Throwing attacks do +50% damage, riots never damage own population',
       effect: 'BOOST_THROWING'
     },
-    startingPopulation: 45,
+    startingGPUs: 45,
     aiStrategy: AIStrategy.CHAOS,
     color: '#000000'
   },
@@ -73,7 +73,7 @@ export const FACTION_CONFIGS: Record<FactionType, FactionConfig> = {
       description: 'Building takes 50% less damage',
       effect: 'REDUCE_BUILDING_DAMAGE'
     },
-    startingPopulation: 48,
+    startingGPUs: 48,
     aiStrategy: AIStrategy.DEFENSIVE,
     color: '#FFD700'
   },
@@ -92,7 +92,7 @@ export const FACTION_CONFIGS: Record<FactionType, FactionConfig> = {
       description: 'Propaganda steals +10 million extra, can convert defenders during invasion',
       effect: 'BOOST_PROPAGANDA'
     },
-    startingPopulation: 52,
+    startingGPUs: 52,
     aiStrategy: AIStrategy.PROPAGANDA,
     color: '#9B59B6'
   }

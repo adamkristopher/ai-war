@@ -36,7 +36,7 @@ export function Card({ card, onClick, disabled }: CardProps) {
       case CardType.ORGANIZATION: return 'ORGANIZATION';
       case CardType.ACTION_PLAN: return 'ACTION PLAN';
       case CardType.DEFENSE: return 'DEFENSE';
-      default: return card.type;
+      default: return 'UNKNOWN';
     }
   };
 

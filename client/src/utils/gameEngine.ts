@@ -197,8 +197,8 @@ export class GameEngine {
 
   private resolveCovertOp(faction: Faction, card: CovertOpCard, target: Faction): void {
     // Determine damage and target type
-    let damage = card.effect.amount;
-    let targetType: 'BUILDING' | 'POPULATION' = 'POPULATION';
+    let damage = 'amount' in card.effect ? card.effect.amount : 0;
+    let targetType: 'BUILDING' | 'GPUS' = 'GPUS';
 
     if (card.effect.type === 'DAMAGE_BUILDING' || card.effect.type === 'SABOTAGE_BUILDING') {
       targetType = 'BUILDING';
@@ -227,20 +227,30 @@ export class GameEngine {
 
     // No defense cards, resolve immediately
     switch (card.effect.type) {
-      case 'DAMAGE_POPULATION':
-        this.damageGPUs(target.id, card.effect.amount);
+      case 'DAMAGE_GPUS':
+        if ('amount' in card.effect) {
+          this.damageGPUs(target.id, card.effect.amount);
+        }
         break;
       case 'DAMAGE_BUILDING':
-        this.damageBuilding(target.id, card.effect.amount);
+        if ('amount' in card.effect) {
+          this.damageBuilding(target.id, card.effect.amount);
+        }
         break;
-      case 'STEAL_POPULATION':
-        this.stealGPUs(faction.id, target.id, card.effect.amount);
+      case 'STEAL_GPUS':
+        if ('amount' in card.effect) {
+          this.stealGPUs(faction.id, target.id, card.effect.amount);
+        }
         break;
       case 'SABOTAGE_BUILDING':
-        this.damageBuilding(target.id, card.effect.amount);
+        if ('amount' in card.effect) {
+          this.damageBuilding(target.id, card.effect.amount);
+        }
         break;
-      case 'GAIN_POPULATION':
-        this.gainGPUs(faction.id, card.effect.amount);
+      case 'GAIN_GPUS':
+        if ('amount' in card.effect) {
+          this.gainGPUs(faction.id, card.effect.amount);
+        }
         break;
       // Other effects not fully implemented for MVP
       default:
@@ -270,7 +280,7 @@ export class GameEngine {
     const card = this.state.discardPile[cardIndex];
 
     // Resolve the card with chosen target
-    if (pending.cardType === CardType.PROPAGANDA) {
+    if (pending.cardType === CardType.PROPAGANDA && card.type === CardType.PROPAGANDA) {
       this.stealGPUs(player.id, target.id, card.stealAmount);
     } else if (pending.cardType === CardType.COVERT_OP) {
       this.resolveCovertOp(player, card as CovertOpCard, target);
@@ -437,7 +447,7 @@ export class GameEngine {
 
   private gainGPUs(factionId: string, amount: number): void {
     const faction = this.state.factions.find(f => f.id === factionId);
-    if (!faction || faction.isEliminated) return; // Eliminated factions can't gain population
+    if (!faction || faction.isEliminated) return; // Eliminated factions can't gain GPUs
 
     const newCards = createGPUCards(amount);
     faction.gpus.push(...newCards);
@@ -465,7 +475,7 @@ export class GameEngine {
     const attacker = this.state.factions.find(f => f.id === attackerId);
     if (!attacker) return;
 
-    // Riot deals 40 damage but costs 5M population
+    // Riot deals 40 damage but costs 5M GPUs
     this.damageBuilding(targetId, 40);
 
     // All nations take riot self-damage
@@ -574,7 +584,7 @@ export class GameEngine {
         type: CardType.COVERT_OP,
         name: 'Test Covert Op',
         description: 'Test',
-        effect: { type: 'DAMAGE_POPULATION', amount: 10 }
+        effect: { type: 'DAMAGE_GPUS', amount: 10 }
       };
       faction.hand.push(card);
     }
@@ -665,7 +675,7 @@ export class GameEngine {
       id: `prop-card-${Date.now()}`,
       type: CardType.PROPAGANDA,
       name: 'Test Propaganda',
-      description: 'Steal population',
+      description: 'Steal GPUs',
       stealAmount: 10
     };
     faction.hand.push(card);
@@ -725,7 +735,7 @@ export class GameEngine {
       if (action.targetType === 'BUILDING' || action.targetType === 'BOTH') {
         this.damageBuilding(target.id, action.damage);
       }
-      if (action.targetType === 'POPULATION' || action.targetType === 'BOTH') {
+      if (action.targetType === 'GPUS' || action.targetType === 'BOTH') {
         this.damageGPUs(target.id, action.damage);
       }
     }
@@ -744,7 +754,7 @@ export class GameEngine {
 
     const action = org.attachedAction;
     const damage = action.damage || 0;
-    const targetType = action.targetType === 'POPULATION' ? 'POPULATION' : 'BUILDING';
+    const targetType = action.targetType === 'GPUS' ? 'GPUS' : 'BUILDING';
 
     // Check if defender has applicable defense cards
     const defenseCards = defender.hand.filter(c => {
@@ -774,7 +784,7 @@ export class GameEngine {
     }
 
     // No defense cards - resolve immediately
-    if (targetType === 'POPULATION') {
+    if (targetType === 'GPUS') {
       this.damageGPUs(defenderId, damage);
     } else {
       this.damageBuilding(defenderId, damage);
@@ -819,7 +829,7 @@ export class GameEngine {
       description: 'Test attack',
       actionType: attackType,
       damage: damage,
-      targetType: attackType === ActionType.PROTEST ? 'POPULATION' : 'BUILDING'
+      targetType: attackType === ActionType.PROTEST ? 'GPUS' : 'BUILDING'
     };
 
     org.attachedAction = action;
@@ -874,7 +884,7 @@ export class GameEngine {
           this.stealGPUs(faction.id, attacker.id, attack.damage);
         } else {
           // For other attacks, reflect the damage back
-          if (attack.targetType === 'POPULATION') {
+          if (attack.targetType === 'GPUS') {
             this.damageGPUs(attacker.id, attack.damage);
           } else {
             this.damageBuilding(attacker.id, attack.damage);
@@ -895,7 +905,7 @@ export class GameEngine {
       this.addEvent('INFO', `${faction.name} reduced damage with ${defenseCard.name}!`, factionId);
 
       if (reducedDamage > 0) {
-        if (attack.targetType === 'POPULATION') {
+        if (attack.targetType === 'GPUS') {
           this.damageGPUs(faction.id, reducedDamage);
         } else {
           this.damageBuilding(faction.id, reducedDamage);
@@ -932,7 +942,7 @@ export class GameEngine {
     this.addEvent('INFO', `${defender.name} chose not to defend`, factionId);
 
     // Apply full damage
-    if (attack.targetType === 'POPULATION') {
+    if (attack.targetType === 'GPUS') {
       this.damageGPUs(factionId, attack.damage);
     } else {
       this.damageBuilding(factionId, attack.damage);
@@ -976,14 +986,14 @@ export class GameEngine {
         defenderId: targetId,
         organizationId: '', // N/A for covert ops
         attackType: CardType.COVERT_OP,
-        damage: card.effect.type === 'DAMAGE_POPULATION' ? card.effect.amount : 10,
-        targetType: card.effect.type === 'DAMAGE_POPULATION' ? 'POPULATION' : 'BUILDING'
+        damage: card.effect.type === 'DAMAGE_GPUS' ? card.effect.amount : 10,
+        targetType: card.effect.type === 'DAMAGE_GPUS' ? 'GPUS' : 'BUILDING'
       };
       return;
     }
 
     // No defense, apply effect immediately
-    if (card.effect.type === 'DAMAGE_POPULATION') {
+    if (card.effect.type === 'DAMAGE_GPUS') {
       this.damageGPUs(targetId, card.effect.amount);
     }
 
@@ -1019,7 +1029,7 @@ export class GameEngine {
         organizationId: '', // N/A for propaganda
         attackType: CardType.PROPAGANDA,
         damage: stealAmount,
-        targetType: 'POPULATION'
+        targetType: 'GPUS'
       };
       return;
     }

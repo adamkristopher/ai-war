@@ -75,4 +75,4 @@ export interface GameEvent {
 }
 
 // Import types from cards.ts
-import type { GameCard, OrganizationCard } from './cards';
+import type { GameCard, OrganizationCard, ActionType, CardType } from './cards';

@@ -14,7 +14,7 @@ export enum FactionType {
   LMNOP = 'LMNOP'
 }
 
-export interface PopulationCard {
+export interface GPUCard {
   id: string;
   value: number; // 1, 5, 10, 15, or 25 million
 }
@@ -24,8 +24,8 @@ export interface Faction {
   type: FactionType;
   name: string;
   isAI: boolean;
-  population: PopulationCard[];
-  totalPopulation: number;
+  gpus: GPUCard[];
+  totalGPUs: number;
   buildingHP: number;
   maxBuildingHP: number;
   hand: GameCard[];

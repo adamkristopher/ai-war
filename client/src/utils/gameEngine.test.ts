@@ -10,7 +10,7 @@ import { FactionType, GamePhase, CardType } from '../shared/types/index';
  * - Turn-based with FIFO card queue (3 cards max, oldest auto-reveals)
  * - Phases: PEACETIME → CONFLICT (on first attack) → FINAL_RETALIATION (on elimination) → PEACETIME
  * - Win: Last standing, Building domination (3+), or Total Annihilation (everyone loses)
- * - Population stored as cards (1, 5, 10, 15, 25M denominations)
+ * - GPUs stored as cards (1, 5, 10, 15, 25M denominations)
  */
 
 describe('GameEngine - Initialization', () => {
@@ -38,17 +38,17 @@ describe('GameEngine - Initialization', () => {
     });
   });
 
-  it('should initialize factions with correct starting population', () => {
+  it('should initialize factions with correct starting GPUs', () => {
     const engine = new GameEngine(FactionType.OPENG);
     const state = engine.getState();
     const openg = state.factions[0];
 
-    // OpenG starts with 300M population
-    expect(openg.totalPopulation).toBe(300);
-    expect(openg.population.length).toBeGreaterThan(0);
+    // OpenG starts with 300M GPUs
+    expect(openg.totalGPUs).toBe(300);
+    expect(openg.gpus.length).toBeGreaterThan(0);
 
-    // Population sum should equal total
-    const sum = openg.population.reduce((acc, card) => acc + card.value, 0);
+    // GPUs sum should equal total
+    const sum = openg.gpus.reduce((acc, card) => acc + card.value, 0);
     expect(sum).toBe(300);
   });
 
@@ -139,7 +139,7 @@ describe('GameEngine - Phase Transitions', () => {
     engine.triggerConflict();
     expect(engine.getState().phase).toBe(GamePhase.CONFLICT);
 
-    // Propaganda should not steal population in conflict
+    // Propaganda should not steal GPUs in conflict
     const isPropagandaActive = engine.isPropagandaActive();
     expect(isPropagandaActive).toBe(false);
   });
@@ -170,17 +170,17 @@ describe('GameEngine - Phase Transitions', () => {
 });
 
 describe('GameEngine - Combat System', () => {
-  it('should damage population when attack targets population', () => {
+  it('should damage GPUs when attack targets GPUs', () => {
     const engine = new GameEngine(FactionType.OPENG);
     const state = engine.getState();
     const targetId = state.factions[1].id;
-    const initialPop = state.factions[1].totalPopulation;
+    const initialGPUs = state.factions[1].totalGPUs;
 
-    engine.damagePopulation(targetId, 10);
+    engine.damageGPUs(targetId, 10);
 
     const newState = engine.getState();
     const target = newState.factions.find(f => f.id === targetId)!;
-    expect(target.totalPopulation).toBe(initialPop - 10);
+    expect(target.totalGPUs).toBe(initialGPUs - 10);
   });
 
   it('should damage building when attack targets building', () => {
@@ -196,18 +196,18 @@ describe('GameEngine - Combat System', () => {
     expect(target.buildingHP).toBe(initialHP - 30);
   });
 
-  it('should eliminate faction when population reaches 0', () => {
+  it('should eliminate faction when GPUs reaches 0', () => {
     const engine = new GameEngine(FactionType.SLOTH);
     const state = engine.getState();
     const targetId = state.factions[1].id;
-    const targetPop = state.factions[1].totalPopulation;
+    const targetGPUs = state.factions[1].totalGPUs;
 
-    engine.damagePopulation(targetId, targetPop);
+    engine.damageGPUs(targetId, targetGPUs);
 
     const newState = engine.getState();
     const target = newState.factions.find(f => f.id === targetId)!;
     expect(target.isEliminated).toBe(true);
-    expect(target.totalPopulation).toBe(0);
+    expect(target.totalGPUs).toBe(0);
   });
 
   it('should disable special ability when building destroyed', () => {
@@ -226,19 +226,19 @@ describe('GameEngine - Combat System', () => {
 });
 
 describe('GameEngine - Faction Special Abilities', () => {
-  it('Gemaica Search Dominance: propaganda steals extra population', () => {
+  it('Gemaica Search Dominance: propaganda steals extra GPUs', () => {
     const engine = new GameEngine(FactionType.GEMAICA);
     const state = engine.getState();
     const gemaica = state.factions[0];
-    const initialPopulation = gemaica.totalPopulation;
+    const initialGPUs = gemaica.totalGPUs;
     const targetId = state.factions[1].id;
 
-    engine.stealPopulation(gemaica.id, targetId, 10);
+    engine.stealGPUs(gemaica.id, targetId, 10);
 
     const newState = engine.getState();
     const updatedGemaica = newState.factions[0];
     // Should steal 20 due to 2x bonus (if ability not used)
-    expect(updatedGemaica.totalPopulation).toBeGreaterThan(initialPopulation + 10);
+    expect(updatedGemaica.totalGPUs).toBeGreaterThan(initialGPUs + 10);
   });
 
   it('OpenG GPT Advantage: throwing attacks +50% damage', () => {
@@ -261,14 +261,14 @@ describe('GameEngine - Faction Special Abilities', () => {
     const engine = new GameEngine(FactionType.OPENG);
     const state = engine.getState();
     const openg = state.factions[0];
-    const initialPop = openg.totalPopulation;
+    const initialGPUs = openg.totalGPUs;
 
     engine.riotAttack(openg.id, state.factions[1].id);
 
     const newState = engine.getState();
     const updatedOpenG = newState.factions[0];
-    // Should lose 5M population
-    expect(updatedOpenG.totalPopulation).toBe(initialPop - 5);
+    // Should lose 5M GPUs
+    expect(updatedOpenG.totalGPUs).toBe(initialGPUs - 5);
   });
 
   it('Clarisa Constitutional AI: building takes 50% less damage', () => {
@@ -289,15 +289,15 @@ describe('GameEngine - Faction Special Abilities', () => {
     const engine = new GameEngine(FactionType.GEMAICA);
     const state = engine.getState();
     const gemaica = state.factions[0];
-    const initialPopulation = gemaica.totalPopulation;
+    const initialGPUs = gemaica.totalGPUs;
     const targetId = state.factions[1].id;
 
-    engine.stealPopulation(gemaica.id, targetId, 10);
+    engine.stealGPUs(gemaica.id, targetId, 10);
 
     const newState = engine.getState();
     const updatedGemaica = newState.factions[0];
     // Should steal 20 (10 + 10 bonus)
-    expect(updatedGemaica.totalPopulation).toBe(initialPopulation + 20);
+    expect(updatedGemaica.totalGPUs).toBe(initialGPUs + 20);
   });
 });
 

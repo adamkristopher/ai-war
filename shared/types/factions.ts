@@ -27,7 +27,7 @@ export interface FactionConfig {
   building: BuildingConfig;
   personality: string[];
   specialAbility: SpecialAbility;
-  startingPopulation: number;
+  startingGPUs: number;
   aiStrategy: AIStrategy;
   color: string;
 }

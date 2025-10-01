@@ -35,13 +35,11 @@ export function DefenseModal({
 
             <div className="flex gap-3 mb-6 justify-center">
               {applicableCards.map(card => (
-                <div
+                <Card
                   key={card.id}
+                  card={card}
                   onClick={() => onPlayDefense(card.id)}
-                  className="cursor-pointer transform hover:scale-105 transition-transform"
-                >
-                  <Card card={card} />
-                </div>
+                />
               ))}
             </div>
 

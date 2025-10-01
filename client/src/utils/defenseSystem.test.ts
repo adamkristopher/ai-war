@@ -148,7 +148,7 @@ describe('Defense System - Full Block Cards', () => {
     let state = engine.getState();
     const attackerId = state.factions[0].id;
     const defenderId = state.factions[1].id;
-    const initialPop = state.factions[1].totalPopulation;
+    const initialGPUs = state.factions[1].totalGPUs;
 
     engine.giveDefenseCard(defenderId, 'Counter-Protesters');
     const orgId = engine.setupReadyAttack(attackerId, ActionType.PROTEST, 20);
@@ -164,20 +164,20 @@ describe('Defense System - Full Block Cards', () => {
     const newState = engine.getState();
     const updatedDefender = newState.factions.find(f => f.id === defenderId)!;
 
-    // Population should be unchanged
-    expect(updatedDefender.totalPopulation).toBe(initialPop);
+    // GPUs should be unchanged
+    expect(updatedDefender.totalGPUs).toBe(initialGPUs);
   });
 
   it('should block covert op with Legal Team', () => {
     let state = engine.getState();
     const attackerId = state.factions[0].id;
     const defenderId = state.factions[1].id;
-    const initialPop = state.factions[1].totalPopulation;
+    const initialGPUs = state.factions[1].totalGPUs;
 
     engine.giveDefenseCard(defenderId, 'Legal Team');
 
     // Give attacker a covert op
-    engine.giveCovertOp(attackerId, 'DAMAGE_POPULATION', 10);
+    engine.giveCovertOp(attackerId, 'DAMAGE_GPUS', 10);
 
     // Get covert op ID
     state = engine.getState();
@@ -197,7 +197,7 @@ describe('Defense System - Full Block Cards', () => {
     const updatedDefender = newState.factions.find(f => f.id === defenderId)!;
 
     // Covert op should be canceled
-    expect(updatedDefender.totalPopulation).toBe(initialPop);
+    expect(updatedDefender.totalGPUs).toBe(initialGPUs);
   });
 });
 
@@ -208,16 +208,16 @@ describe('Defense System - Damage Reduction Cards', () => {
     engine = new GameEngine(FactionType.OPENG);
   });
 
-  it('should reduce population damage by 50% with Bomb Shelter', () => {
+  it('should reduce GPUs damage by 50% with Bomb Shelter', () => {
     let state = engine.getState();
     const attackerId = state.factions[0].id;
     const defenderId = state.factions[1].id;
-    const initialPop = state.factions[1].totalPopulation;
+    const initialGPUs = state.factions[1].totalGPUs;
 
     engine.giveDefenseCard(defenderId, 'Bomb Shelter');
     const orgId = engine.setupReadyAttack(attackerId, ActionType.THROWING, 30);
 
-    // Note: We need to change the attack to target population
+    // Note: We need to change the attack to target GPUs
     // This test reveals that setupReadyAttack needs a targetType parameter
     engine.executeAttack(attackerId, defenderId, orgId);
 
@@ -230,7 +230,7 @@ describe('Defense System - Damage Reduction Cards', () => {
     const newState = engine.getState();
     const updatedDefender = newState.factions.find(f => f.id === defenderId)!;
 
-    // Should take 50% damage - but this test needs the attack to target population
+    // Should take 50% damage - but this test needs the attack to target GPUs
     // For now, skip detailed assertion until setupReadyAttack supports target selection
     expect(newState.pendingAttack).toBeNull();
   });
@@ -274,8 +274,8 @@ describe('Defense System - Special Effects', () => {
     let state = engine.getState();
     const attackerId = state.factions[0].id;
     const defenderId = state.factions[1].id;
-    const initialAttackerPop = state.factions[0].totalPopulation;
-    const initialDefenderPop = state.factions[1].totalPopulation;
+    const initialAttackerGPUs = state.factions[0].totalGPUs;
+    const initialDefenderGPUs = state.factions[1].totalGPUs;
 
     engine.giveDefenseCard(defenderId, 'Media Spin');
 
@@ -299,9 +299,9 @@ describe('Defense System - Special Effects', () => {
     const updatedAttacker = newState.factions.find(f => f.id === attackerId)!;
     const updatedDefender = newState.factions.find(f => f.id === defenderId)!;
 
-    // Defender should gain population, attacker should lose
-    expect(updatedDefender.totalPopulation).toBeGreaterThan(initialDefenderPop);
-    expect(updatedAttacker.totalPopulation).toBeLessThan(initialAttackerPop);
+    // Defender should gain GPUs, attacker should lose
+    expect(updatedDefender.totalGPUs).toBeGreaterThan(initialDefenderGPUs);
+    expect(updatedAttacker.totalGPUs).toBeLessThan(initialAttackerGPUs);
   });
 });
 

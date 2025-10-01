@@ -74,10 +74,10 @@ describe('AIEngine - AGGRESSIVE Strategy (USA)', () => {
     const state = gameEngine.getState();
     const usa = state.factions.find(f => f.type === FactionType.OPENG)!;
 
-    // Set different population levels
+    // Set different GPU levels
     state.factions.forEach((f, i) => {
       if (f.id !== usa.id) {
-        gameEngine.setPopulation(f.id, 30 + (i * 10));
+        gameEngine.setGPUs(f.id, 30 + (i * 10));
       }
     });
 
@@ -87,7 +87,7 @@ describe('AIEngine - AGGRESSIVE Strategy (USA)', () => {
     if (action?.type === 'EXECUTE_ATTACK') {
       const target = state.factions.find(f => f.id === action.targetId)!;
       // Should target one of the stronger factions
-      expect(target.totalPopulation).toBeGreaterThan(30);
+      expect(target.totalGPUs).toBeGreaterThan(30);
     }
   });
 
@@ -116,10 +116,10 @@ describe('AIEngine - DEFENSIVE Strategy (Russia)', () => {
     const state = gameEngine.getState();
     const russia = state.factions.find(f => f.type === FactionType.CLARISA)!;
 
-    // Set different population levels
+    // Set different GPU levels
     state.factions.forEach((f, i) => {
       if (f.id !== russia.id) {
-        gameEngine.setPopulation(f.id, 50 - (i * 5));
+        gameEngine.setGPUs(f.id, 50 - (i * 5));
       }
     });
 
@@ -129,7 +129,7 @@ describe('AIEngine - DEFENSIVE Strategy (Russia)', () => {
     if (action?.type === 'EXECUTE_ATTACK') {
       const target = state.factions.find(f => f.id === action.targetId)!;
       // Should target weaker faction
-      expect(target.totalPopulation).toBeLessThan(50);
+      expect(target.totalGPUs).toBeLessThan(50);
     }
   });
 
@@ -536,29 +536,29 @@ describe('AIEngine - Defense Card Decision', () => {
     expect(decision.cardId).toBeUndefined();
   });
 
-  it('should consider population attacks when deciding defense', () => {
+  it('should consider GPUs attacks when deciding defense', () => {
     const gameEngine = new GameEngine(FactionType.OPENG);
     const aiEngine = new AIEngine();
     let state = gameEngine.getState();
     const aiDefenderId = state.factions.find(f => f.isAI)!.id;
 
-    // Low population
-    gameEngine.setPopulation(aiDefenderId, 20);
+    // Low GPUs
+    gameEngine.setGPUs(aiDefenderId, 20);
 
     gameEngine.clearHand(aiDefenderId);
-    gameEngine.giveDefenseCard(aiDefenderId, 'Bomb Shelter'); // Reduces population damage
+    gameEngine.giveDefenseCard(aiDefenderId, 'Bomb Shelter'); // Reduces GPUs damage
 
     state = gameEngine.getState();
     const aiDefender = state.factions.find(f => f.id === aiDefenderId)!;
 
-    // Population attack that would eliminate
+    // GPUs attack that would eliminate
     const pendingAttack = {
       attackerId: state.factions[0].id,
       defenderId: aiDefenderId,
       organizationId: 'test-org',
       attackType: ActionType.THROWING,
       damage: 25,
-      targetType: 'POPULATION' as 'POPULATION'
+      targetType: 'GPUS' as 'GPUS'
     };
 
     const decision = aiEngine.shouldPlayDefenseCard(aiDefender, state, pendingAttack);

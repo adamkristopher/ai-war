@@ -14,13 +14,13 @@ export const COVERT_OPS: Omit<CovertOpCard, 'id'>[] = [
     type: CardType.COVERT_OP,
     name: 'Zero-Day Exploit',
     description: 'Target loses 15K GPUs to emergency shutdown',
-    effect: { type: 'DAMAGE_POPULATION', amount: 15 }
+    effect: { type: 'DAMAGE_GPUS', amount: 15 }
   },
   {
     type: CardType.COVERT_OP,
     name: 'Model Theft',
     description: 'Steal 10K GPUs worth of compute (works during conflict)',
-    effect: { type: 'STEAL_POPULATION', amount: 10 }
+    effect: { type: 'STEAL_GPUS', amount: 10 }
   },
   {
     type: CardType.COVERT_OP,
@@ -50,7 +50,7 @@ export const COVERT_OPS: Omit<CovertOpCard, 'id'>[] = [
     type: CardType.COVERT_OP,
     name: 'GPU Heist',
     description: 'Gain 10K GPUs instantly',
-    effect: { type: 'GAIN_POPULATION', amount: 10 }
+    effect: { type: 'GAIN_GPUS', amount: 10 }
   },
   {
     type: CardType.COVERT_OP,
@@ -159,7 +159,7 @@ export const ACTION_PLANS: Omit<ActionPlanCard, 'id'>[] = [
     description: '10K GPU disruption',
     actionType: ActionType.PROTEST,
     damage: 10,
-    targetType: 'POPULATION'
+    targetType: 'GPUS'
   },
   {
     type: CardType.ACTION_PLAN,
@@ -352,8 +352,8 @@ export const DEFENSE_COUNTS: Record<string, number> = {
   'Counter-Intelligence': 2
 };
 
-// Population card distribution
-export const POPULATION_CARD_VALUES = [
+// GPU card distribution
+export const GPU_CARD_VALUES = [
   { value: 1, count: 10 },
   { value: 5, count: 8 },
   { value: 10, count: 6 },

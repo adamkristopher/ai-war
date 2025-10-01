@@ -18,7 +18,7 @@ import {
   ACTION_PLAN_COUNTS,
   DEFENSES,
   DEFENSE_COUNTS,
-  POPULATION_CARD_VALUES
+  GPU_CARD_VALUES
 } from '../shared/constants/index';
 
 let cardIdCounter = 0;

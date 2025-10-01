@@ -222,7 +222,7 @@ export class AIEngine {
         return validTargets[Math.floor(Math.random() * validTargets.length)];
 
       case AIStrategy.PROPAGANDA:
-        // India: Target high population but avoid strong military
+        // India: Target high GPUs but avoid strong military
         return this.selectPropagandaTarget(faction, validTargets);
 
       case AIStrategy.BALANCED:
@@ -231,29 +231,29 @@ export class AIEngine {
 
       default:
         return validTargets.reduce((best, current) =>
-          current.totalPopulation > best.totalPopulation ? current : best
+          current.totalGPUs > best.totalGPUs ? current : best
         );
     }
   }
 
   private selectAggressiveTarget(faction: Faction, validTargets: Faction[]): Faction {
-    // Prioritize finishing off wounded targets (< 30% building HP or < 50% population)
+    // Prioritize finishing off wounded targets (< 30% building HP or < 50% GPUs)
     const wounded = validTargets.filter(t =>
       (t.buildingHP / t.maxBuildingHP < 0.3) ||
-      (t.totalPopulation < FACTION_CONFIGS[t.type].startingPopulation * 0.5)
+      (t.totalGPUs < FACTION_CONFIGS[t.type].startingGPUs * 0.5)
     );
 
     if (wounded.length > 0) {
       // Target the strongest wounded opponent
       return wounded.reduce((best, current) =>
-        current.totalPopulation > best.totalPopulation ? current : best
+        current.totalGPUs > best.totalGPUs ? current : best
       );
     }
 
-    // Otherwise target strongest by total power (population + building HP)
+    // Otherwise target strongest by total power (GPUs + building HP)
     return validTargets.reduce((strongest, current) => {
-      const currentPower = current.totalPopulation + current.buildingHP;
-      const strongestPower = strongest.totalPopulation + strongest.buildingHP;
+      const currentPower = current.totalGPUs + current.buildingHP;
+      const strongestPower = strongest.totalGPUs + strongest.buildingHP;
       return currentPower > strongestPower ? current : strongest;
     });
   }
@@ -267,22 +267,22 @@ export class AIEngine {
     if (threatsWithAttacks.length > 0) {
       // Attack the weakest threat to eliminate them quickly
       return threatsWithAttacks.reduce((weakest, current) =>
-        (current.buildingHP + current.totalPopulation * 0.3) <
-        (weakest.buildingHP + weakest.totalPopulation * 0.3) ? current : weakest
+        (current.buildingHP + current.totalGPUs * 0.3) <
+        (weakest.buildingHP + weakest.totalGPUs * 0.3) ? current : weakest
       );
     }
 
-    // Otherwise target weakest by population (easiest to eliminate)
+    // Otherwise target weakest by GPUs (easiest to eliminate)
     return validTargets.reduce((weakest, current) =>
-      current.totalPopulation < weakest.totalPopulation ? current : weakest
+      current.totalGPUs < weakest.totalGPUs ? current : weakest
     );
   }
 
   private selectPropagandaTarget(faction: Faction, validTargets: Faction[]): Faction {
-    // Target high population, but avoid those with many organizations (military strength)
+    // Target high GPUs, but avoid those with many organizations (military strength)
     const scored = validTargets.map(t => ({
       target: t,
-      score: t.totalPopulation - (t.organizations.length * 200)
+      score: t.totalGPUs - (t.organizations.length * 200)
     }));
 
     return scored.reduce((best, current) =>
@@ -291,7 +291,7 @@ export class AIEngine {
   }
 
   private selectBalancedTarget(faction: Faction, validTargets: Faction[]): Faction {
-    // Consider multiple factors: population, building HP, threats, opportunities
+    // Consider multiple factors: GPUs, building HP, threats, opportunities
     const scored = validTargets.map(t => {
       let score = 0;
 
@@ -300,16 +300,16 @@ export class AIEngine {
       if (hpPercent < 0.3) score += 100;
       else if (hpPercent < 0.5) score += 50;
 
-      // Factor 2: Population value (more pop = better steal target)
-      score += t.totalPopulation * 0.05;
+      // Factor 2: GPUs value (more GPUs = better steal target)
+      score += t.totalGPUs * 0.05;
 
       // Factor 3: Threat level (ready attacks are dangerous)
       if (t.organizations.some(org => org.attachedAction)) score += 50;
 
       // Factor 4: Avoid strongest (they can retaliate harder)
-      const power = t.totalPopulation + t.buildingHP;
+      const power = t.totalGPUs + t.buildingHP;
       const avgPower = validTargets.reduce((sum, vt) =>
-        sum + vt.totalPopulation + vt.buildingHP, 0
+        sum + vt.totalGPUs + vt.buildingHP, 0
       ) / validTargets.length;
       if (power > avgPower * 1.5) score -= 80; // Penalize strongest
 
@@ -334,9 +334,9 @@ export class AIEngine {
     }
 
     // Determine current health status
-    const currentHP = attack.targetType === 'BUILDING' ? faction.buildingHP : faction.totalPopulation;
+    const currentHP = attack.targetType === 'BUILDING' ? faction.buildingHP : faction.totalGPUs;
     const maxHP = attack.targetType === 'BUILDING' ? faction.maxBuildingHP :
-      (FACTION_CONFIGS[faction.type]?.startingPopulation || 100);
+      (FACTION_CONFIGS[faction.type]?.startingGPUs || 100);
     const healthPercent = maxHP > 0 ? currentHP / maxHP : 0;
 
     // Check if attack would be lethal

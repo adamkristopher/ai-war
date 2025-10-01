@@ -8,7 +8,7 @@ import { FactionType, ActionType } from '../shared/types/index';
  *
  * AI should consider multiple factors when selecting targets:
  * - Building HP (low HP = good target to eliminate)
- * - Population (high pop = good steal target, low pop = easy elimination)
+ * - GPUs (high GPUs = good steal target, low GPUs = easy elimination)
  * - Military strength (ready attacks = threat)
  * - Strategy personality (aggressive, defensive, chaos, propaganda, balanced)
  */
@@ -29,8 +29,8 @@ describe('AI Targeting - Aggressive Strategy (USA)', () => {
     const nKoreaId = state.factions.find(f => f.type === FactionType.SLOTH)!.id;
     const indiaId = state.factions.find(f => f.type === FactionType.GEMAICA)!.id;
 
-    // India has most population (1400) but is healthy
-    // North Korea has less population (26) but is wounded
+    // India has most GPUs (1400) but is healthy
+    // North Korea has less GPUs (26) but is wounded
     engine.damageBuilding(nKoreaId, 90); // N.Korea at 30/120 HP (25%)
 
     state = engine.getState();
@@ -51,7 +51,7 @@ describe('AI Targeting - Aggressive Strategy (USA)', () => {
     const usa = state.factions.find(f => f.id === usaId)!;
     const validTargets = state.factions.filter(f => f.id !== usaId && !f.isEliminated);
 
-    // Should target India (highest population)
+    // Should target India (highest GPUs)
     const target = aiEngine.selectTarget(usa, validTargets, state);
     expect(target.id).toBe(indiaId);
   });
@@ -93,7 +93,7 @@ describe('AI Targeting - Defensive Strategy (Russia)', () => {
     const russia = state.factions.find(f => f.id === russiaId)!;
     const validTargets = state.factions.filter(f => f.id !== russiaId && !f.isEliminated);
 
-    // Should target North Korea (lowest population 26M)
+    // Should target North Korea (lowest GPUs 26M)
     const target = aiEngine.selectTarget(russia, validTargets, state);
     expect(target.id).toBe(nKoreaId);
   });
@@ -108,7 +108,7 @@ describe('AI Targeting - Propaganda Strategy (India)', () => {
     aiEngine = new AIEngine();
   });
 
-  it('should prefer high population targets with weak military', () => {
+  it('should prefer high GPUs targets with weak military', () => {
     let state = engine.getState();
     const indiaId = state.factions.find(f => f.type === FactionType.GEMAICA)!.id;
     const usaId = state.factions.find(f => f.type === FactionType.OPENG)!.id;
@@ -150,7 +150,7 @@ describe('AI Targeting - Balanced Strategy (Britain)', () => {
     const britain = state.factions.find(f => f.id === britainId)!;
     const validTargets = state.factions.filter(f => f.id !== britainId && !f.isEliminated);
 
-    // Should target wounded North Korea despite India having more population
+    // Should target wounded North Korea despite India having more GPUs
     const target = aiEngine.selectTarget(britain, validTargets, state);
     expect(target.id).toBe(nKoreaId);
   });
@@ -164,7 +164,7 @@ describe('AI Targeting - Balanced Strategy (Britain)', () => {
     const britain = state.factions.find(f => f.id === britainId)!;
     const validTargets = state.factions.filter(f => f.id !== britainId && !f.isEliminated);
 
-    // Should NOT always target India (strongest with 1400 pop)
+    // Should NOT always target India (strongest with 1400 GPUs)
     // Let's run this 10 times - should pick non-India at least once
     let pickedNonIndia = false;
     for (let i = 0; i < 10; i++) {
