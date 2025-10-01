@@ -1,15 +1,26 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { getTopLeaderboard, addLeaderboardEntry, getUserBestScore } from './db.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from client build in production
+if (process.env.NODE_ENV === 'production') {
+  const clientDistPath = path.join(__dirname, '../../client/dist');
+  app.use(express.static(clientDistPath));
+}
 
 // Get top 20 leaderboard
 app.get('/api/leaderboard', async (req, res) => {
@@ -63,6 +74,14 @@ app.get('/api/leaderboard/user/:handle', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user score' });
   }
 });
+
+// Serve index.html for all other routes (SPA support) in production
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    const clientDistPath = path.join(__dirname, '../../client/dist');
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
