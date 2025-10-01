@@ -255,10 +255,10 @@ Published by Flying Buffalo Games
 ## 🔗 Links
 
 - **Twitter/X**: [@rubberdev](https://x.com/rubberdev)
-- **GitHub**: [rubberdev](https://github.com/adamkristopher)
+- **GitHub**: [adamkristopher](https://github.com/adamkristopher)
 - **LinkedIn**: [Adam Carter](https://linkedin.com/in/adam-carter-45b949356)
-- **Instagram**: [@rubberdev](https://instagram.com/firstmanio)
-- **YouTube**: [RubberDev](https://youtube.com/@AuditechConsulting)
+- **Instagram**: [@firstmanio](https://instagram.com/firstmanio)
+- **YouTube**: [Auditech Consulting](https://youtube.com/@AuditechConsulting)
 
 ---
 
