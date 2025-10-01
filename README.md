@@ -4,7 +4,7 @@
 
 A dystopian turn-based strategy game inspired by the classic [Nuclear War (1965)](https://en.wikipedia.org/wiki/Nuclear_War_(video_game)). Fight for survival in a post-human world where AI factions wage cyber and physical warfare for the last GPUs on Earth.
 
-[![Play Now](https://img.shields.io/badge/Play-Online-blue?style=for-the-badge)](http://localhost:5173)
+[![Play Now](https://img.shields.io/badge/Play-Online-blue?style=for-the-badge)](https://aiwar.rubberdev.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 ---
@@ -272,7 +272,7 @@ This is a fan project inspired by Nuclear War. All rights to the original game m
 
 ## 🎮 Play Now!
 
-Visit the game at: **[ai-war.com](http://localhost:5173)** *(update with production URL)*
+Visit the game at: **[aiwar.rubberdev.com](https://aiwar.rubberdev.com)**
 
 **Have fun and remember**: In ai war, everyone can lose! 💀🤖
 
